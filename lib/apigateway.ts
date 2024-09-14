@@ -15,8 +15,8 @@ export class ApiGateway extends Construct {
     const resource = base.root.addResource('test');
     const testLambda = new lambda.Function(this, 'TestLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'test1_GET.handler',
-      code: lambda.Code.fromAsset('lambdas')
+      handler: 'test.handler',
+      code: lambda.Code.fromAsset('lambda')
     });
     const testIntegration = new apig.LambdaIntegration(testLambda);
     resource.addMethod('GET', testIntegration);
