@@ -15,5 +15,9 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     new Queue(this, 'TestAwsCdkAppDeadLetterQueue', {
       visibilityTimeout: cdk.Duration.seconds(300)
     });
+
+    new Queue(this, 'TestAwsCdkAppQueue2', {
+      visibilityTimeout: cdk.Duration.seconds(300)
+    });
   }
 }

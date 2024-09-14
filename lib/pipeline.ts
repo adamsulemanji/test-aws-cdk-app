@@ -14,9 +14,9 @@ export class Pipeline extends cdk.Stack {
 
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
       actionName: 'GitHub_Source',
-      owner: 'Adamsulemanji',
+      owner: 'adamsulemanji',
       repo: 'test-aws-cdk-app',
-      oauthToken: cdk.SecretValue.secretsManager('GitHub-token2'),
+      oauthToken: cdk.SecretValue.secretsManager('github_token2'),
       output: sourceOutput,
       branch: 'master',
       trigger: codepipeline_actions.GitHubTrigger.WEBHOOK, 
@@ -97,6 +97,5 @@ export class Pipeline extends cdk.Stack {
       ],
     });
 
-    new cdk.CfnOutput(this, 'TestAwsCdkAppPipeline', { value: pipeline.pipelineName });
   }
 }
