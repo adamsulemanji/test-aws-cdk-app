@@ -20,5 +20,7 @@ export class ApiGateway extends Construct {
     });
     const testIntegration = new apig.LambdaIntegration(testLambda);
     resource.addMethod('GET', testIntegration);
+    resource.addMethod('POST', testIntegration);
+    resource.addMethod('PUT', testIntegration);
   }
 }
