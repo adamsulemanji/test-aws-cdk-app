@@ -1,26 +1,30 @@
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
-import * as apig from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as path from 'path';
 
-export class ApiGateway extends Construct {
-  constructor(scope: Construct, id: string) {
+export class ApiGatewayConstruct extends Construct {
+  constructor(scope: Construct, id: string, lambdas: lambda.Function[]) {
     super(scope, id);
 
-    const base = new apig.RestApi(this, 'TestAwsCdkAppApiGateway', {
-        restApiName: 'TestAwsCdkAppApiGateway',
-        description: 'This is a test API Gateway',
+    // Create API Gateway
+    const base = new apigateway.RestApi(this, 'TestAwsCdkAppApiGateway', {
+      restApiName: 'TestAwsCdkAppApiGateway',
+      description: 'This is a test API Gateway',
     });
 
-    const resource = base.root.addResource('test');
-    const testLambda = new lambda.Function(this, 'TestLambda', {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'test.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda'))
-    });
-    const testIntegration = new apig.LambdaIntegration(testLambda);
-    resource.addMethod('GET', testIntegration);
-    resource.addMethod('POST', testIntegration);
-    resource.addMethod('PUT', testIntegration);
+    // Lambda for creating orders
+    const orders = base.root.addResource('orders');
+    const createOrderIntegration = new apigateway.LambdaIntegration(lambdas[0]);
+    orders.addMethod('POST', createOrderIntegration);
+
+    // Lambda for getting user
+    const users = base.root.addResource('users');
+    const getUserIntegration = new apigateway.LambdaIntegration(lambdas[1]);
+    users.addMethod('GET', getUserIntegration);
+
+    // Lambda for updating orders
+    const updateOrder = orders.addResource('{orderId}');
+    const updateOrderIntegration = new apigateway.LambdaIntegration(lambdas[2]);
+    updateOrder.addMethod('PUT', updateOrderIntegration);
   }
 }
