@@ -4,6 +4,7 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { run } from 'node:test';
 
 export class Pipeline extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
@@ -24,20 +25,31 @@ export class Pipeline extends cdk.Stack {
 
     const synthProject = new codebuild.PipelineProject(this, 'SynthProject', {
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
-        privileged: true, 
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+        privileged: true,
       },
-      buildSpec: codebuild.BuildSpec.fromObject({
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
         version: '0.2',
         phases: {
           install: {
+            runtime_versions: {
+              nodejs: '20'
+            },
             commands: [
-              'npm install -g aws-cdk', 
+              'n 20.12.2',  // Install and use Node.js 20.12.2
+              'npm install -g npm@10.5.0',  // Latest stable npm version for Node.js 20.12.2
+              'npm install -g aws-cdk',
               'npm install',
             ],
           },
+          pre_build: {
+            commands: [
+              'node --version',
+              'npm --version',
+            ],
+          },
           build: {
-            commands: ['cdk synth -o dist'], 
+            commands: ['cdk synth -o dist'],
           },
         },
         artifacts: {
