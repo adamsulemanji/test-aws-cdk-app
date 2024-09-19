@@ -32,12 +32,12 @@ export class Pipeline extends cdk.Stack {
         version: '0.2',
         phases: {
           install: {
-            runtime_versions: {
+            runtimeVersions: {
               nodejs: '20'
             },
             commands: [
-              'n 20.12.2',  // Install and use Node.js 20.12.2
-              'npm install -g npm@10.5.0',  // Latest stable npm version for Node.js 20.12.2
+              'n 20.12.2', 
+              'npm install -g npm@10.5.0',
               'npm install -g aws-cdk',
               'npm install',
             ],
