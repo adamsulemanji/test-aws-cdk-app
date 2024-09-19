@@ -18,7 +18,7 @@ export class LambdaConstruct extends Construct {
     this.createOrderLambda = new lambda.Function(this, 'CreateOrderLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'test.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/test.js')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/')),
       environment: {
         ORDERS_TABLE_NAME: ordersTableName,
       },
@@ -28,7 +28,7 @@ export class LambdaConstruct extends Construct {
     this.getUserLambda = new lambda.Function(this, 'GetUserLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'test.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/test.js')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/')),
       environment: {
         USERS_TABLE_NAME: usersTableName,
       },
@@ -38,7 +38,7 @@ export class LambdaConstruct extends Construct {
     this.updateOrderLambda = new lambda.Function(this, 'UpdateOrderLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'test.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/test.js')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/lambda/')),
       environment: {
         ORDERS_TABLE_NAME: ordersTableName,
       },
