@@ -17,9 +17,11 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     );
 
     // Grant Lambdas access to the respective DynamoDB tables
-    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.createOrderLambda);
-    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.updateOrderLambda);
-    dynamoDbConstruct.usersTable.grantFullAccess(lambdaConstruct.getUserLambda);
+    // Grant appropriate permissions to each Lambda
+    dynamoDbConstruct.usersTable.grantReadData(lambdaConstruct.getUserLambda);
+    dynamoDbConstruct.ordersTable.grantWriteData(lambdaConstruct.getUserLambda);
+    dynamoDbConstruct.ordersTable.grantWriteData(lambdaConstruct.createOrderLambda);
+    dynamoDbConstruct.ordersTable.grantReadWriteData(lambdaConstruct.updateOrderLambda);
 
     // Create API Gateway and connect to the Lambda functions
     new ApiGatewayConstruct(this, 'ApiGatewayConstruct', [
