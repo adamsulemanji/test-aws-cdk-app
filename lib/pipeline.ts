@@ -51,10 +51,6 @@ export class Pipeline extends cdk.Stack {
           },
           build: {
             commands: [
-              'echo "Synthesizing CDK app"',
-              'ls -R',
-              'echo "Contents of lambda directory"',
-              'cd -R lambda',
               'cdk synth -o dist'],
           },
         },
