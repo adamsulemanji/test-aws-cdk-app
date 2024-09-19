@@ -8,5 +8,5 @@ node_modules
 .cdk.staging
 cdk.out
 
-# Dont ignore lambda functions
-!lambda/**/*.js
+# dont ignore anything in my lib folder
+!lib/**
