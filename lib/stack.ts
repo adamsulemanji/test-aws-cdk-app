@@ -11,18 +11,15 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     // Create DynamoDB tables
     const dynamoDbConstruct = new DynamoDBConstruct(this, 'DynamoDBConstruct');
 
-
     // Create Lambda functions and pass the DynamoDB table names
-    const lambdaConstruct = new LambdaConstruct(
-      this, 
-      'LambdaConstruct',
-      dynamoDbConstruct.tables
+    const lambdaConstruct = new LambdaConstruct(this, 'LambdaConstruct',   [dynamoDbConstruct.ordersTable, 
+      dynamoDbConstruct.usersTable]
     );
 
     // Grant Lambdas access to the respective DynamoDB tables
-    dynamoDbConstruct.tables[0].grantFullAccess(lambdaConstruct.createOrderLambda);
-    dynamoDbConstruct.tables[0].grantFullAccess(lambdaConstruct.updateOrderLambda);
-    dynamoDbConstruct.tables[1].grantFullAccess(lambdaConstruct.getUserLambda);
+    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.createOrderLambda);
+    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.updateOrderLambda);
+    dynamoDbConstruct.usersTable.grantFullAccess(lambdaConstruct.getUserLambda);
 
     // Create API Gateway and connect to the Lambda functions
     new ApiGatewayConstruct(this, 'ApiGatewayConstruct', [
