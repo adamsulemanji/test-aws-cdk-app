@@ -11,7 +11,7 @@
     "cdk": "cdk",
     "format": "prettier --write \"src/**/*.ts\"",
     "format-check": "prettier --check \"src/**/*.ts\"",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . -c *.ts",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -41,6 +41,9 @@
     "uuid": "^10.0.0"
   },
   "lint-staged": {
-    "*.ts": "prettier --write"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
