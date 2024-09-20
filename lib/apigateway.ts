@@ -1,6 +1,7 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as fs from 'fs';
 
 export class ApiGatewayConstruct extends Construct {
   constructor(scope: Construct, id: string, lambdas: lambda.Function[]) {
