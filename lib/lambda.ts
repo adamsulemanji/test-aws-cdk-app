@@ -15,7 +15,7 @@ export class LambdaConstruct extends Construct {
     this.orders = new lambda.Function(this, 'OrdersLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'orders.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda')),
       environment: {
         USERS_TABLE_NAME: ordersTableName,
       },

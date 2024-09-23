@@ -6,6 +6,7 @@ const {
   UpdateItemCommand,
   GetItemCommand,
   ScanCommand,
+  DeleteItemCommand,
 } = require('@aws-sdk/client-dynamodb');
 const { unmarshall } = require('@aws-sdk/util-dynamodb');
 
@@ -16,7 +17,7 @@ const TABLE_NAME = 'OrdersTable';
 const handler = async (event) => {
   const method = event.httpMethod;
   const resource = event.resource;
-  const pathParameters = event.pathParameters || {};
+  const pathParameters = event.pathParameters || '';
   const orderId = pathParameters.orderId;
   const body = event.body;
 
@@ -35,7 +36,6 @@ const handler = async (event) => {
         body: JSON.stringify(items),
       };
     } else if (method === 'GET' && resource === '/orders/{orderId}') {
-      // GET /orders/{orderId} - Retrieve a specific order
       if (!orderId) {
         return {
           statusCode: 400,

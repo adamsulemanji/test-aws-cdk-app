@@ -8,5 +8,5 @@ node_modules
 .cdk.staging
 cdk.out
 
-# dont ignore anything in my lib folder
-!lib/**
+# Dont ignore anything in the lambda directory
+!lambda/**
