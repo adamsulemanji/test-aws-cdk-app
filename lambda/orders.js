@@ -179,6 +179,28 @@ const handler = async (event) => {
           orderId: orderId,
         }),
       };
+    } else if (method == 'GET' && resource == '/orders/random') {
+      // GET /orders/random - Retrieve a random order
+      const params = {
+        TableName: TABLE_NAME,
+      };
+
+      const data = await ddbClient.send(new ScanCommand(params));
+
+      if (data.Items.length === 0) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ message: 'No orders found' }),
+        };
+      }
+
+      const randomIndex = Math.floor(Math.random() * data.Items.length);
+      const randomOrder = unmarshall(data.Items[randomIndex]);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(randomOrder),
+      };
     } else {
       // Method Not Allowed
       return {

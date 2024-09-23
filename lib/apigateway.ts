@@ -24,6 +24,8 @@ export class ApiGatewayConstruct extends Construct {
     orders.addMethod('GET', ordersIntegration);
     orders.addMethod('POST', ordersIntegration);
 
+    // ********** New Resource **********
+
     // Resource: /orders/{orderId}
     const orderById = orders.addResource('{orderId}');
     const orderByIdIntegration = new apigateway.LambdaIntegration(
@@ -34,5 +36,16 @@ export class ApiGatewayConstruct extends Construct {
     orderById.addMethod('GET', orderByIdIntegration);
     orderById.addMethod('PATCH', orderByIdIntegration);
     orderById.addMethod('DELETE', orderByIdIntegration);
+
+    // ********** New Resource **********
+
+    // Resource /orders/random
+    const random = orders.addResource('random');
+    const randomIntegration = new apigateway.LambdaIntegration(
+      lambdaFunction[0],
+    );
+
+    // Methods on /orders/random
+    random.addMethod('GET', randomIntegration);
   }
 }
