@@ -47,5 +47,13 @@ export class ApiGatewayConstruct extends Construct {
 
     // Methods on /orders/random
     random.addMethod('GET', randomIntegration);
+
+    // ********** New Resource **********
+    const sendMessage = api.root.addResource('sendMessage');
+    const sendMessageIntegration = new apigateway.LambdaIntegration(
+      lambdaFunction[1],
+    );
+
+    sendMessage.addMethod('POST', sendMessageIntegration);
   }
 }

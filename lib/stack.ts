@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { ApiGatewayConstruct } from './apigateway';
 import { LambdaConstruct } from './lambda';
@@ -10,22 +11,41 @@ export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Create DynamoDB tables
+    // ******** Create DynamoDB tables ********
     const dynamoDbConstruct = new DynamoDBConstruct(this, 'DynamoDBConstruct');
 
-    // Create Lambda functions and pass the DynamoDB table names
-    const lambdaConstruct = new LambdaConstruct(this, 'LambdaConstruct', [
-      dynamoDbConstruct.ordersTable,
-    ]);
+    // ******** Create SNS Topic ********
+    const snsConstruct = new SNSConstruct(this, 'SNSConstruct');
 
-    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.orders);
+    // ******** Create SQS Queue ********
+    const sqsConstruct = new SQSConstruct(this, 'SQSConstruct');
 
-    // Create API Gateway and connect to the Lambda functions
+    // ******** Create Lambda Functions ********
+    const lambdaConstruct = new LambdaConstruct(
+      this,
+      'LambdaConstruct',
+      [dynamoDbConstruct.ordersTable],
+      snsConstruct.sendMessage,
+    );
+
+    // ******** Create API Gateway ********
     new ApiGatewayConstruct(this, 'ApiGatewayConstruct', [
       lambdaConstruct.orders,
+      lambdaConstruct.sendMessage,
     ]);
 
-    const sqsConstruct = new SQSConstruct(this, 'SQSConstruct');
-    const snsConstruct = new SNSConstruct(this, 'SNSConstruct');
+    // ********** Grant Permissions **********
+    dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.orders);
+    lambdaConstruct.sendMessage.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: ['arn:aws:sns:*:*:*'],
+        conditions: {
+          StringEquals: {
+            'sns:protocol': 'sms',
+          },
+        },
+      }),
+    );
   }
 }
