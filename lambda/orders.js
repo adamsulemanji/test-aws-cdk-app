@@ -35,38 +35,6 @@ const handler = async (event) => {
         statusCode: 200,
         body: JSON.stringify(items),
       };
-    } else if (method === 'GET' && resource === '/orders/{orderId}') {
-      if (!orderId) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({
-            message: 'orderId is required in path parameters',
-          }),
-        };
-      }
-
-      const params = {
-        TableName: TABLE_NAME,
-        Key: {
-          orderId: { S: orderId },
-        },
-      };
-
-      const data = await ddbClient.send(new GetItemCommand(params));
-
-      if (!data.Item) {
-        return {
-          statusCode: 404,
-          body: JSON.stringify({ message: 'Order not found' }),
-        };
-      }
-
-      const item = unmarshall(data.Item);
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify(item),
-      };
     } else if (method === 'POST' && resource === '/orders') {
       // POST /orders - Create a new order
       const newOrderId = Math.random().toString(36).substring(2, 15);
@@ -149,6 +117,65 @@ const handler = async (event) => {
         statusCode: 200,
         body: JSON.stringify({
           message: 'Order timestamp updated successfully',
+          orderId: orderId,
+        }),
+      };
+    } else if (method === 'GET' && resource === '/orders/{orderId}') {
+      if (!orderId) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: 'orderId is required in path parameters',
+          }),
+        };
+      }
+
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          orderId: { S: orderId },
+        },
+      };
+
+      const data = await ddbClient.send(new GetItemCommand(params));
+
+      if (!data.Item) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ message: 'Order not found' }),
+        };
+      }
+
+      const item = unmarshall(data.Item);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(item),
+      };
+    } else if (method == 'DELETE' && resource === '/orders/{orderId}') {
+      // DELETE /orders/{orderId} - Delete an order
+      if (!orderId) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: 'orderId is required in path parameters',
+          }),
+        };
+      }
+
+      const params = {
+        TableName: TABLE_NAME,
+        Key: {
+          orderId: { S: orderId },
+        },
+      };
+
+      await ddbClient.send(new DeleteItemCommand(params));
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: 'Order deleted successfully',
           orderId: orderId,
         }),
       };

@@ -9,9 +9,9 @@ export class ApiGatewayConstruct extends Construct {
     super(scope, id);
 
     // Create API Gateway
-    const api = new apigateway.RestApi(this, 'TestAwsCdkAppApiGateway', {
-      restApiName: 'TestAwsCdkAppApiGateway',
-      description: 'This is a test API Gateway',
+    const api = new apigateway.RestApi(this, 'OrdersAPIGateway', {
+      restApiName: 'OrdersAPIGateway',
+      description: 'APIGateway for Orders service in testing purposes',
     });
 
     // Resource: /orders
@@ -33,5 +33,6 @@ export class ApiGatewayConstruct extends Construct {
     // Methods on /orders/{orderId}
     orderById.addMethod('GET', orderByIdIntegration);
     orderById.addMethod('PATCH', orderByIdIntegration);
+    orderById.addMethod('DELETE', orderByIdIntegration);
   }
 }
