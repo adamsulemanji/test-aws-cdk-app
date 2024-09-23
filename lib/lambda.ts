@@ -23,7 +23,7 @@ export class LambdaConstruct extends Construct {
     this.orders = new lambda.Function(this, 'OrdersLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'orders.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '/../lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda')),
       environment: {
         USERS_TABLE_NAME: ordersTableName,
       },
@@ -32,7 +32,7 @@ export class LambdaConstruct extends Construct {
     this.sendMessage = new lambda.Function(this, 'SendSmsLambda', {
       runtime: lambda.Runtime.NODEJS_16_X,
       handler: 'sendMessage.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '/../lambda')), // Path to your lambda code
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda')), // Path to your lambda code
       environment: {
         SMS_TOPIC_ARN: smsTopic.topicArn, // Pass the SNS topic ARN to Lambda
       },
