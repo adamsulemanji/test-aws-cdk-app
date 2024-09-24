@@ -19,7 +19,7 @@ export class LambdaConstruct extends Construct {
     // ******* Get the DynamoDB table name *******
     const ordersTableName = dynamos[0].tableName;
 
-    // Lambda for getting orders
+    // ********** Lambda for orders **********
     this.orders = new lambda.Function(this, 'OrdersLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'orders.handler',
@@ -28,6 +28,8 @@ export class LambdaConstruct extends Construct {
         USERS_TABLE_NAME: ordersTableName,
       },
     });
+
+    // ********** Lambda for sending SMS **********
 
     this.sendMessage = new lambda.Function(this, 'SendSmsLambda', {
       runtime: lambda.Runtime.NODEJS_16_X,

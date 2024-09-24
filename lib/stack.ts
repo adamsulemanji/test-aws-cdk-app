@@ -6,6 +6,7 @@ import { LambdaConstruct } from './lambda';
 import { DynamoDBConstruct } from './dynamodb';
 import { SNSConstruct } from './sns';
 import { SQSConstruct } from './sqs';
+import { FrontendConstruct } from './frontend';
 
 export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -34,6 +35,9 @@ export class TestAwsCdkAppStack extends cdk.Stack {
       lambdaConstruct.orders,
       lambdaConstruct.sendMessage,
     ]);
+
+    // ********** Frontend Construct **********
+    new FrontendConstruct(this, 'FrontendConstruct');
 
     // ********** Grant Permissions **********
     dynamoDbConstruct.ordersTable.grantFullAccess(lambdaConstruct.orders);
