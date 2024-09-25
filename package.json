@@ -9,9 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "format": "prettier --write '**/*.{js,ts,json,css,md}'",
+    "format": "prettier --write '**/*.{js,ts,json,css,md,jsx}'",
     "format-check": "prettier --check \"src/**/*.ts\"",
-    "lint": "eslint '**/*.{js,ts}' --fix",
+    "lint": "eslint '**/*.{js,ts,jsx}' --fix",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -42,6 +42,7 @@
     "https": "^1.0.0",
     "smithy": "^0.6.3",
     "source-map-support": "^0.5.21",
+    "typescript-eslint": "^8.7.0",
     "uuid": "^10.0.0"
   },
   "lint-staged": {

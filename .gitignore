@@ -11,3 +11,6 @@ cdk.out
 
 # Dont ignore anything in the lambda directory
 !lambda/**
+
+# Dont ignore anything in the frontend directory
+!frontend/**

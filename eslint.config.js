@@ -1,8 +1,7 @@
-// eslint.config.js
 module.exports = [
   {
     rules: {
-      semi: 'error',
+      semi: ['error', 'always'],
       'sort-imports': [
         'error',
         {
