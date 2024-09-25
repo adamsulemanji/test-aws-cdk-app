@@ -5,7 +5,6 @@ import { TestAwsCdkAppStack } from '../lib/stack';
 import { Pipeline } from '../lib/pipeline';
 
 const app = new cdk.App();
-new TestAwsCdkAppStack(app, 'TestAwsCdkAppStack', {
-});
+new TestAwsCdkAppStack(app, 'TestAwsCdkAppStack', {});
 
 new Pipeline(app, 'Pipeline', {});

@@ -6,7 +6,7 @@ import { LambdaConstruct } from './lambda';
 import { DynamoDBConstruct } from './dynamodb';
 import { SNSConstruct } from './sns';
 import { SQSConstruct } from './sqs';
-import { FrontendConstruct } from './frontend';
+import { FrontendConstruct } from './cloudfront';
 
 export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -17,7 +17,6 @@ export class TestAwsCdkAppStack extends cdk.Stack {
 
     // ******** Create SNS Topic ********
     const snsConstruct = new SNSConstruct(this, 'SNSConstruct');
-    // https://github.com/ShareMyWebStuff/SendSMS/blob/main/lib/send_sms-stack.ts
 
     // ******** Create SQS Queue ********
     const sqsConstruct = new SQSConstruct(this, 'SQSConstruct');

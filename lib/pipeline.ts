@@ -20,7 +20,7 @@ export class Pipeline extends cdk.Stack {
       oauthToken: cdk.SecretValue.secretsManager('github_token2'),
       output: sourceOutput,
       branch: 'master',
-      trigger: codepipeline_actions.GitHubTrigger.WEBHOOK, 
+      trigger: codepipeline_actions.GitHubTrigger.WEBHOOK,
     });
 
     const synthProject = new codebuild.PipelineProject(this, 'SynthProject', {
@@ -33,25 +33,20 @@ export class Pipeline extends cdk.Stack {
         phases: {
           install: {
             runtimeVersions: {
-              nodejs: '20'
+              nodejs: '20',
             },
             commands: [
-              'n 20.12.2', 
+              'n 20.12.2',
               'npm install -g npm@10.5.0',
               'npm install -g aws-cdk',
               'npm install',
             ],
           },
           pre_build: {
-            commands: [
-              'node --version',
-              'npm --version',
-              'cdk --version',
-            ],
+            commands: ['node --version', 'npm --version', 'cdk --version'],
           },
           build: {
-            commands: [
-              'cdk synth -o dist'],
+            commands: ['cdk synth -o dist'],
           },
         },
         artifacts: {
@@ -74,7 +69,7 @@ export class Pipeline extends cdk.Stack {
           'iam:PassRole',
         ],
         resources: ['*'],
-      })
+      }),
     );
 
     const synthAction = new codepipeline_actions.CodeBuildAction({
@@ -84,13 +79,14 @@ export class Pipeline extends cdk.Stack {
       outputs: [synthOutput],
     });
 
-    const deployAction = new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CFN_Deploy',
-      stackName: 'TestAwsCdkAppStack', 
-      templatePath: synthOutput.atPath('TestAwsCdkAppStack.template.json'),
-      adminPermissions: true, 
-      cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM],
-    });
+    const deployAction =
+      new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CFN_Deploy',
+        stackName: 'TestAwsCdkAppStack',
+        templatePath: synthOutput.atPath('TestAwsCdkAppStack.template.json'),
+        adminPermissions: true,
+        cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM],
+      });
 
     // Define the pipeline
     const pipeline = new codepipeline.Pipeline(this, 'TestAwsCdkAppPipeline', {
@@ -110,6 +106,5 @@ export class Pipeline extends cdk.Stack {
         },
       ],
     });
-
   }
 }
