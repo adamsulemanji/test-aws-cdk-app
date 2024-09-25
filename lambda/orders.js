@@ -1,5 +1,3 @@
-// ordersHandler.js
-
 const {
   DynamoDBClient,
   PutItemCommand,
@@ -11,6 +9,11 @@ const {
 const { unmarshall } = require('@aws-sdk/util-dynamodb');
 
 const ddbClient = new DynamoDBClient({});
+
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': '*',
+};
 
 const TABLE_NAME = 'OrdersTable';
 
@@ -33,6 +36,7 @@ const handler = async (event) => {
 
       return {
         statusCode: 200,
+        headers: headers,
         body: JSON.stringify(items),
       };
     } else if (method === 'POST' && resource === '/orders') {
@@ -47,6 +51,7 @@ const handler = async (event) => {
         } catch (err) {
           return {
             statusCode: 400,
+            headers: headers,
             body: JSON.stringify({ message: 'Invalid JSON in request body' }),
           };
         }
@@ -78,6 +83,7 @@ const handler = async (event) => {
 
       return {
         statusCode: 201,
+        headers: headers,
         body: JSON.stringify({
           message: 'Order created successfully',
           orderId: newOrderId,
@@ -88,6 +94,7 @@ const handler = async (event) => {
       if (!orderId) {
         return {
           statusCode: 400,
+          headers: headers,
           body: JSON.stringify({
             message: 'orderId is required in path parameters',
           }),
@@ -124,6 +131,7 @@ const handler = async (event) => {
       if (!orderId) {
         return {
           statusCode: 400,
+          headers: headers,
           body: JSON.stringify({
             message: 'orderId is required in path parameters',
           }),
@@ -142,6 +150,7 @@ const handler = async (event) => {
       if (!data.Item) {
         return {
           statusCode: 404,
+          headers: headers,
           body: JSON.stringify({ message: 'Order not found' }),
         };
       }
@@ -150,6 +159,7 @@ const handler = async (event) => {
 
       return {
         statusCode: 200,
+        headers: headers,
         body: JSON.stringify(item),
       };
     } else if (method == 'DELETE' && resource === '/orders/{orderId}') {
@@ -157,6 +167,7 @@ const handler = async (event) => {
       if (!orderId) {
         return {
           statusCode: 400,
+          headers: headers,
           body: JSON.stringify({
             message: 'orderId is required in path parameters',
           }),
@@ -174,6 +185,7 @@ const handler = async (event) => {
 
       return {
         statusCode: 200,
+        headers: headers,
         body: JSON.stringify({
           message: 'Order deleted successfully',
           orderId: orderId,
@@ -190,6 +202,7 @@ const handler = async (event) => {
       if (data.Items.length === 0) {
         return {
           statusCode: 404,
+          headers: headers,
           body: JSON.stringify({ message: 'No orders found' }),
         };
       }
@@ -199,12 +212,14 @@ const handler = async (event) => {
 
       return {
         statusCode: 200,
+        headers: headers,
         body: JSON.stringify(randomOrder),
       };
     } else {
       // Method Not Allowed
       return {
         statusCode: 405,
+        headers: headers,
         body: JSON.stringify({ message: 'Method Not Allowed' }),
       };
     }
@@ -212,6 +227,7 @@ const handler = async (event) => {
     console.error('Error:', err);
     return {
       statusCode: 500,
+      headers: headers,
       body: JSON.stringify({
         message: 'Internal Server Error',
         error: err.message,

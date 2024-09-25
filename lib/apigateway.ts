@@ -1,5 +1,3 @@
-// api-gateway-construct.ts
-
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -12,6 +10,10 @@ export class ApiGatewayConstruct extends Construct {
     const api = new apigateway.RestApi(this, 'OrdersAPIGateway', {
       restApiName: 'OrdersAPIGateway',
       description: 'APIGateway for Orders service in testing purposes',
+      defaultCorsPreflightOptions: {
+        allowOrigins: ["'*'"],
+        allowMethods: apigateway.Cors.ALL_METHODS,
+      },
     });
 
     // Resource: /orders
