@@ -10,9 +10,11 @@ export class Pipeline extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // ********** PIPELINE **********
     const sourceOutput = new codepipeline.Artifact();
     const synthOutput = new codepipeline.Artifact();
 
+    // ********** GITHUB SOURCE ACTION **********
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
       actionName: 'GitHub_Source',
       owner: 'adamsulemanji',
@@ -23,6 +25,7 @@ export class Pipeline extends cdk.Stack {
       trigger: codepipeline_actions.GitHubTrigger.WEBHOOK,
     });
 
+    // ********** SYNTH PROJECT **********
     const synthProject = new codebuild.PipelineProject(this, 'SynthProject', {
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
@@ -40,13 +43,19 @@ export class Pipeline extends cdk.Stack {
               'npm install -g npm@10.5.0',
               'npm install -g aws-cdk',
               'npm install',
+              'cd frontend/my-react-app',
+              'npm install',
             ],
           },
           pre_build: {
             commands: ['node --version', 'npm --version', 'cdk --version'],
           },
           build: {
-            commands: ['cdk synth -o dist'],
+            commands: [
+              'cdk synth -o dist',
+              'cd frontend/my-react-app',
+              'npm run build',
+            ],
           },
         },
         artifacts: {
@@ -56,6 +65,7 @@ export class Pipeline extends cdk.Stack {
       }),
     });
 
+    // ********** SYNTH PROJECT POLICY **********
     synthProject.addToRolePolicy(
       new iam.PolicyStatement({
         actions: [
@@ -72,6 +82,7 @@ export class Pipeline extends cdk.Stack {
       }),
     );
 
+    // ********** PIPELINE ACTIONS ********
     const synthAction = new codepipeline_actions.CodeBuildAction({
       actionName: 'CDK_Synth',
       project: synthProject,
@@ -79,6 +90,7 @@ export class Pipeline extends cdk.Stack {
       outputs: [synthOutput],
     });
 
+    // ********** DEPLOY ACTION **********
     const deployAction =
       new codepipeline_actions.CloudFormationCreateUpdateStackAction({
         actionName: 'CFN_Deploy',
@@ -88,7 +100,7 @@ export class Pipeline extends cdk.Stack {
         cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM],
       });
 
-    // Define the pipeline
+    // ********** PIPELINE **********
     const pipeline = new codepipeline.Pipeline(this, 'TestAwsCdkAppPipeline', {
       pipelineName: 'TestAwsCdkAppPipeline',
       stages: [
