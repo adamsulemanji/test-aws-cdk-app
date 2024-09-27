@@ -9,7 +9,6 @@ const {
 const { unmarshall } = require('@aws-sdk/util-dynamodb');
 
 const ddbClient = new DynamoDBClient({});
-
 const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': '*',
