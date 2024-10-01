@@ -7,6 +7,7 @@ import { DynamoDBConstruct } from './dynamodb';
 import { SNSConstruct } from './sns';
 import { SQSConstruct } from './sqs';
 import { FrontendConstruct } from './cloudfront';
+import { RDSConstruct } from './rds';
 
 export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -14,6 +15,9 @@ export class TestAwsCdkAppStack extends cdk.Stack {
 
     // ******** Create DynamoDB tables ********
     const dynamoDbConstruct = new DynamoDBConstruct(this, 'DynamoDBConstruct');
+
+    // ******** Create RDS Instance ********
+    const rdsConstruct = new RDSConstruct(this, 'RDSConstruct');
 
     // ******** Create SNS Topic ********
     const snsConstruct = new SNSConstruct(this, 'SNSConstruct');
