@@ -57,5 +57,13 @@ export class ApiGatewayConstruct extends Construct {
     );
 
     sendMessage.addMethod('POST', sendMessageIntegration);
+
+    // ********** New Resource **********
+    const eventBridgeToggle = api.root.addResource('eventBridgeToggle');
+    const eventBridgeToggleIntegration = new apigateway.LambdaIntegration(
+      lambdaFunction[2],
+    );
+
+    eventBridgeToggle.addMethod('POST', eventBridgeToggleIntegration);
   }
 }

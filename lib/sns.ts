@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-
 import * as sns from 'aws-cdk-lib/aws-sns';
 
 export class SNSConstruct extends Construct {

@@ -6,8 +6,6 @@ const handler = async (event) => {
   const phoneNumber = body.phoneNumber;
   const message = body.message;
 
-  // TODO: Currently not allowed to send text message since I do not have a verified phonenumber from an organization acccount setup.
-
   const params = {
     Message: message,
     PhoneNumber: phoneNumber,

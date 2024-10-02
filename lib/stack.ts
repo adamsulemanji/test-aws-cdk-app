@@ -8,6 +8,7 @@ import { SNSConstruct } from './sns';
 import { SQSConstruct } from './sqs';
 import { FrontendConstruct } from './cloudfront';
 import { RDSConstruct } from './rds';
+import { EventConstruct } from './eventbridge';
 
 export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -33,10 +34,22 @@ export class TestAwsCdkAppStack extends cdk.Stack {
       snsConstruct.sendMessage,
     );
 
+    // ******** Create Event Bridge Rule ********
+    const eventBridgeConstruct = new EventConstruct(
+      this,
+      'EventConstruct',
+      lambdaConstruct.eventBridgeLambda,
+    );
+    lambdaConstruct.eventBridgeToggleLambda.addEnvironment(
+      'RULE_NAME',
+      eventBridgeConstruct.eventRule.ruleName,
+    );
+
     // ******** Create API Gateway ********
     new ApiGatewayConstruct(this, 'ApiGatewayConstruct', [
       lambdaConstruct.orders,
       lambdaConstruct.sendMessage,
+      lambdaConstruct.eventBridgeToggleLambda,
     ]);
 
     // ********** Frontend Construct **********
@@ -47,12 +60,22 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     lambdaConstruct.sendMessage.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
-        resources: ['arn:aws:sns:*:*:*'],
+        resources: [snsConstruct.sendMessage.topicArn],
         conditions: {
           StringEquals: {
             'sns:protocol': 'sms',
           },
         },
+      }),
+    );
+    lambdaConstruct.eventBridgeToggleLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'events:DescribeRule',
+          'events:EnableRule',
+          'events:DisableRule',
+        ],
+        resources: [eventBridgeConstruct.eventRule.ruleArn],
       }),
     );
   }
