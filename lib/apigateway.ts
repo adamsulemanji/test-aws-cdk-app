@@ -1,9 +1,15 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 
 export class ApiGatewayConstruct extends Construct {
-  constructor(scope: Construct, id: string, lambdaFunction: lambda.Function[]) {
+  constructor(
+    scope: Construct,
+    id: string,
+    lambdaFunction: lambda.Function[],
+    userPool: cognito.UserPool,
+  ) {
     super(scope, id);
 
     // Create API Gateway
@@ -16,17 +22,30 @@ export class ApiGatewayConstruct extends Construct {
       },
     });
 
+    // Create Cognito Authorizer
+    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(
+      this,
+      'OrdersAPIGatewayAuthorizer',
+      {
+        cognitoUserPools: [userPool],
+      },
+    );
+
     // Resource: /orders
     const orders = api.root.addResource('orders');
     const ordersIntegration = new apigateway.LambdaIntegration(
       lambdaFunction[0],
     );
 
-    // Methods on /orders
-    orders.addMethod('GET', ordersIntegration);
-    orders.addMethod('POST', ordersIntegration);
-
-    // ********** New Resource **********
+    // Methods on /orders with Cognito Authorizer
+    orders.addMethod('GET', ordersIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
+    orders.addMethod('POST', ordersIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
 
     // Resource: /orders/{orderId}
     const orderById = orders.addResource('{orderId}');
@@ -34,36 +53,51 @@ export class ApiGatewayConstruct extends Construct {
       lambdaFunction[0],
     );
 
-    // Methods on /orders/{orderId}
-    orderById.addMethod('GET', orderByIdIntegration);
-    orderById.addMethod('PATCH', orderByIdIntegration);
-    orderById.addMethod('DELETE', orderByIdIntegration);
+    // Methods on /orders/{orderId} with Cognito Authorizer
+    orderById.addMethod('GET', orderByIdIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
+    orderById.addMethod('PATCH', orderByIdIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
+    orderById.addMethod('DELETE', orderByIdIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
 
-    // ********** New Resource **********
-
-    // Resource /orders/random
+    // Resource: /orders/random
     const random = orders.addResource('random');
     const randomIntegration = new apigateway.LambdaIntegration(
       lambdaFunction[0],
     );
 
-    // Methods on /orders/random
-    random.addMethod('GET', randomIntegration);
+    random.addMethod('GET', randomIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
 
-    // ********** New Resource **********
+    // Resource: /sendMessage
     const sendMessage = api.root.addResource('sendMessage');
     const sendMessageIntegration = new apigateway.LambdaIntegration(
       lambdaFunction[1],
     );
 
-    sendMessage.addMethod('POST', sendMessageIntegration);
+    sendMessage.addMethod('POST', sendMessageIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
 
-    // ********** New Resource **********
+    // Resource: /eventBridgeToggle
     const eventBridgeToggle = api.root.addResource('eventBridgeToggle');
     const eventBridgeToggleIntegration = new apigateway.LambdaIntegration(
       lambdaFunction[2],
     );
 
-    eventBridgeToggle.addMethod('POST', eventBridgeToggleIntegration);
+    eventBridgeToggle.addMethod('POST', eventBridgeToggleIntegration, {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
   }
 }

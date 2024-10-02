@@ -9,6 +9,7 @@ import { SQSConstruct } from './sqs';
 import { FrontendConstruct } from './cloudfront';
 import { RDSConstruct } from './rds';
 import { EventConstruct } from './eventbridge';
+import { CognitoConstruct } from './cognito';
 
 export class TestAwsCdkAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,6 +26,9 @@ export class TestAwsCdkAppStack extends cdk.Stack {
 
     // ******** Create SQS Queue ********
     const sqsConstruct = new SQSConstruct(this, 'SQSConstruct');
+
+    // ******** Create Cognito User Pool ********
+    const cognitoConstruct = new CognitoConstruct(this, 'CognitoConstruct');
 
     // ******** Create Lambda Functions ********
     const lambdaConstruct = new LambdaConstruct(
@@ -46,11 +50,16 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     );
 
     // ******** Create API Gateway ********
-    new ApiGatewayConstruct(this, 'ApiGatewayConstruct', [
-      lambdaConstruct.orders,
-      lambdaConstruct.sendMessage,
-      lambdaConstruct.eventBridgeToggleLambda,
-    ]);
+    new ApiGatewayConstruct(
+      this,
+      'ApiGatewayConstruct',
+      [
+        lambdaConstruct.orders,
+        lambdaConstruct.sendMessage,
+        lambdaConstruct.eventBridgeToggleLambda,
+      ],
+      cognitoConstruct.userPool,
+    );
 
     // ********** Frontend Construct **********
     new FrontendConstruct(this, 'FrontendConstruct');
