@@ -17,8 +17,16 @@ export class ApiGatewayConstruct extends Construct {
       restApiName: 'OrdersAPIGateway',
       description: 'APIGateway for Orders service in testing purposes',
       defaultCorsPreflightOptions: {
-        allowOrigins: ["'*'"],
+        allowOrigins: ['*'],
         allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'X-Amz-Security-Token',
+        ],
+        allowCredentials: true,
       },
     });
 

@@ -10,7 +10,6 @@ export class CognitoConstruct extends Construct {
     this.userPool = new cognito.UserPool(this, 'UserPool', {
       selfSignUpEnabled: true,
       signInAliases: { email: true },
-      autoVerify: { email: true },
       standardAttributes: {
         email: { required: true, mutable: false },
       },

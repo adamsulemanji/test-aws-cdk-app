@@ -23,6 +23,12 @@ const handler = async (event) => {
   const orderId = pathParameters.orderId;
   const body = event.body;
 
+  console.log('Event:', event);
+  console.log('Method:', method);
+  console.log('Resource:', resource);
+  console.log('Path Parameters:', pathParameters);
+  console.log('Body:', body);
+
   try {
     if (method === 'GET' && resource === '/orders') {
       // GET /orders - Retrieve all orders
@@ -32,6 +38,8 @@ const handler = async (event) => {
 
       const data = await ddbClient.send(new ScanCommand(params));
       const items = data.Items.map((item) => unmarshall(item));
+
+      console.log('Items:', items);
 
       return {
         statusCode: 200,
