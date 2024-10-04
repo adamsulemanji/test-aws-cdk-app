@@ -50,6 +50,8 @@ export class Pipeline extends cdk.Stack {
           build: {
             commands: [
               'cd ../',
+              'pwd',
+              'ls',
               'cd frontend/my-react-app',
               'npm run build',
               'cd ../../',
@@ -58,7 +60,7 @@ export class Pipeline extends cdk.Stack {
           },
         },
         artifacts: {
-          'base-directory': 'dist', // Ensure dist is set as output dir
+          'base-directory': 'dist',
           files: ['**/*'],
         },
       }),
