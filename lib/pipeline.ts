@@ -4,7 +4,6 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { run } from 'node:test';
 
 export class Pipeline extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
@@ -39,8 +38,6 @@ export class Pipeline extends cdk.Stack {
               nodejs: '20',
             },
             commands: [
-              'n 20.12.2',
-              'npm install -g npm@10.5.0',
               'npm install -g aws-cdk',
               'npm install',
               'cd frontend/my-react-app',
@@ -52,14 +49,16 @@ export class Pipeline extends cdk.Stack {
           },
           build: {
             commands: [
-              'cdk synth -o dist',
+              'cd ../',
               'cd frontend/my-react-app',
               'npm run build',
+              'cd ../../',
+              'cdk synth -o dist',
             ],
           },
         },
         artifacts: {
-          'base-directory': 'dist',
+          'base-directory': 'dist', // Ensure dist is set as output dir
           files: ['**/*'],
         },
       }),
@@ -82,7 +81,7 @@ export class Pipeline extends cdk.Stack {
       }),
     );
 
-    // ********** PIPELINE ACTIONS ********
+    // ********** PIPELINE ACTIONS **********
     const synthAction = new codepipeline_actions.CodeBuildAction({
       actionName: 'CDK_Synth',
       project: synthProject,
@@ -101,7 +100,7 @@ export class Pipeline extends cdk.Stack {
       });
 
     // ********** PIPELINE **********
-    const pipeline = new codepipeline.Pipeline(this, 'TestAwsCdkAppPipeline', {
+    new codepipeline.Pipeline(this, 'TestAwsCdkAppPipeline', {
       pipelineName: 'TestAwsCdkAppPipeline',
       stages: [
         {
