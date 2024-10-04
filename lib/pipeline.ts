@@ -50,9 +50,7 @@ export class Pipeline extends cdk.Stack {
           build: {
             commands: [
               'cd ../',
-              'pwd',
-              'ls',
-              'cd frontend/my-react-app',
+              'cd my-react-app',
               'npm run build',
               'cd ../../',
               'cdk synth -o dist',
