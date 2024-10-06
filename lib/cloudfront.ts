@@ -49,13 +49,13 @@ export class FrontendConstruct extends Construct {
       errorResponses: [
         {
           httpStatus: 403,
-          responseHttpStatus: 403,
-          responsePagePath: '/error.html',
+          responseHttpStatus: 200, // Serve index.html
+          responsePagePath: '/index.html',
           ttl: Duration.minutes(1),
         },
         {
           httpStatus: 404,
-          responseHttpStatus: 200,
+          responseHttpStatus: 200, // Serve index.html
           responsePagePath: '/index.html',
           ttl: Duration.minutes(1),
         },

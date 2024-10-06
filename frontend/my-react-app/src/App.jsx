@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Routes>
         <Route exact path="/" element={<Test />} />
-        <Route exact path="/simple-header" element={<SimpleHeader />} />
+        <Route exact path="/simple" element={<SimpleHeader />} />
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
     </Router>

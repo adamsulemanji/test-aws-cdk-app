@@ -215,6 +215,13 @@ function Test() {
           </ul>
         </div>
       )}
+      {/* make a button and go to /simple */}
+      <button
+        className="mt-8 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+        onClick={() => (window.location.href = '/simple')}
+      >
+        Go to Simple Header
+      </button>
       <a
         className="mt-8 text-blue-500 hover:underline"
         href="https://reactjs.org"
