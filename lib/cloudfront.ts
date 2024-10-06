@@ -53,6 +53,12 @@ export class FrontendConstruct extends Construct {
           responsePagePath: '/error.html',
           ttl: Duration.minutes(1),
         },
+        {
+          httpStatus: 404,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html',
+          ttl: Duration.minutes(1),
+        },
       ],
     });
 
