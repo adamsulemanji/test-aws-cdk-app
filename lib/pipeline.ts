@@ -4,21 +4,14 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 
 export class Pipeline extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // ********** S3 BUCKET FOR FRONTEND **********
-    const frontendBucket = new s3.Bucket(this, 'FrontendBucket', {
-      websiteIndexDocument: 'index.html',
-    });
-
-    // ********** PIPELINE ARTIFACTS **********
+    // ********** PIPELINE **********
     const sourceOutput = new codepipeline.Artifact();
     const synthOutput = new codepipeline.Artifact();
-    const frontendOutput = new codepipeline.Artifact();
 
     // ********** GITHUB SOURCE ACTION **********
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
@@ -29,28 +22,6 @@ export class Pipeline extends cdk.Stack {
       output: sourceOutput,
       branch: 'master',
       trigger: codepipeline_actions.GitHubTrigger.WEBHOOK,
-    });
-
-    // ********** FRONTEND BUILD PROJECT **********
-    const frontendBuild = new codebuild.PipelineProject(this, 'FrontendBuild', {
-      environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
-      },
-      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: ['cd frontend/my-react-app', 'npm install'],
-          },
-          build: {
-            commands: ['npm run build'],
-          },
-        },
-        artifacts: {
-          'base-directory': 'frontend/my-react-app/build',
-          files: ['**/*'],
-        },
-      }),
     });
 
     // ********** SYNTH PROJECT **********
@@ -66,13 +37,24 @@ export class Pipeline extends cdk.Stack {
             runtimeVersions: {
               nodejs: '20',
             },
-            commands: ['npm install -g aws-cdk', 'npm install'],
+            commands: [
+              'npm install -g aws-cdk',
+              'npm install',
+              'cd frontend/my-react-app',
+              'npm install',
+            ],
           },
           pre_build: {
             commands: ['node --version', 'npm --version', 'cdk --version'],
           },
           build: {
-            commands: ['cdk synth -o dist TestAwsCdkAppStack'],
+            commands: [
+              'cd ../',
+              'cd my-react-app',
+              'npm run build',
+              'cd ../../',
+              'cdk synth -o dist',
+            ],
           },
         },
         artifacts: {
@@ -100,24 +82,11 @@ export class Pipeline extends cdk.Stack {
     );
 
     // ********** PIPELINE ACTIONS **********
-    const frontendBuildAction = new codepipeline_actions.CodeBuildAction({
-      actionName: 'Frontend_Build',
-      project: frontendBuild,
-      input: sourceOutput,
-      outputs: [frontendOutput],
-    });
-
     const synthAction = new codepipeline_actions.CodeBuildAction({
       actionName: 'CDK_Synth',
       project: synthProject,
       input: sourceOutput,
       outputs: [synthOutput],
-    });
-
-    const s3DeployAction = new codepipeline_actions.S3DeployAction({
-      actionName: 'S3_Deploy',
-      bucket: frontendBucket,
-      input: frontendOutput,
     });
 
     // ********** DEPLOY ACTION **********
@@ -139,16 +108,12 @@ export class Pipeline extends cdk.Stack {
           actions: [sourceAction],
         },
         {
-          stageName: 'BuildFrontend',
-          actions: [frontendBuildAction],
-        },
-        {
           stageName: 'Synth',
           actions: [synthAction],
         },
         {
           stageName: 'Deploy',
-          actions: [deployAction, s3DeployAction],
+          actions: [deployAction],
         },
       ],
     });
