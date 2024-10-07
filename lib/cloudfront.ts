@@ -1,4 +1,4 @@
-import { CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnOutput, Duration, RemovalPolicy, Size } from 'aws-cdk-lib';
 import {
   AllowedMethods,
   Distribution,
@@ -67,6 +67,8 @@ export class FrontendConstruct extends Construct {
       sources: [Source.asset('./frontend/my-react-app/build')],
       destinationBucket: myBucket,
       distribution,
+      memoryLimit: 1024,
+      ephemeralStorageSize: Size.mebibytes(1024),
       distributionPaths: ['/*'],
     });
 
