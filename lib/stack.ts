@@ -19,7 +19,7 @@ export class TestAwsCdkAppStack extends cdk.Stack {
     const dynamoDbConstruct = new DynamoDBConstruct(this, 'DynamoDBConstruct');
 
     // ******** Create RDS Instance ********
-    const rdsConstruct = new RDSConstruct(this, 'RDSConstruct');
+    // const rdsConstruct = new RDSConstruct(this, 'RDSConstruct');
 
     // ******** Create SNS Topic ********
     const snsConstruct = new SNSConstruct(this, 'SNSConstruct');
