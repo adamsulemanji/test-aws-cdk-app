@@ -50,7 +50,7 @@ export class Pipeline extends cdk.Stack {
             commands: ['node --version', 'npm --version', 'cdk --version'],
           },
           build: {
-            commands: ['cdk synth -o dist TestAwsCdkAppStack'],
+            commands: ['pwd', 'ls -al', 'cdk synth -o dist TestAwsCdkAppStack'],
           },
         },
         artifacts: {
