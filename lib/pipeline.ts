@@ -31,6 +31,28 @@ export class Pipeline extends cdk.Stack {
       trigger: codepipeline_actions.GitHubTrigger.WEBHOOK,
     });
 
+    // ********** FRONTEND BUILD PROJECT **********
+    const frontendBuild = new codebuild.PipelineProject(this, 'FrontendBuild', {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+      },
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+        version: '0.2',
+        phases: {
+          install: {
+            commands: ['cd frontend/my-react-app', 'npm install'],
+          },
+          build: {
+            commands: ['npm run build'],
+          },
+        },
+        artifacts: {
+          'base-directory': 'frontend/my-react-app/build',
+          files: ['**/*'],
+        },
+      }),
+    });
+
     // ********** SYNTH PROJECT **********
     const synthProject = new codebuild.PipelineProject(this, 'SynthProject', {
       environment: {
@@ -50,7 +72,7 @@ export class Pipeline extends cdk.Stack {
             commands: ['node --version', 'npm --version', 'cdk --version'],
           },
           build: {
-            commands: ['pwd', 'ls -al', 'cdk synth -o dist TestAwsCdkAppStack'],
+            commands: ['cdk synth -o dist TestAwsCdkAppStack'],
           },
         },
         artifacts: {
@@ -77,41 +99,19 @@ export class Pipeline extends cdk.Stack {
       }),
     );
 
-    // ********** FRONTEND BUILD PROJECT **********
-    const frontendBuild = new codebuild.PipelineProject(this, 'FrontendBuild', {
-      environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
-      },
-      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: ['cd frontend/my-react-app', 'npm install'],
-          },
-          build: {
-            commands: ['npm run build'],
-          },
-        },
-        artifacts: {
-          'base-directory': 'frontend/my-react-app/build',
-          files: ['**/*'],
-        },
-      }),
-    });
-
     // ********** PIPELINE ACTIONS **********
-    const synthAction = new codepipeline_actions.CodeBuildAction({
-      actionName: 'CDK_Synth',
-      project: synthProject,
-      input: sourceOutput,
-      outputs: [synthOutput],
-    });
-
     const frontendBuildAction = new codepipeline_actions.CodeBuildAction({
       actionName: 'Frontend_Build',
       project: frontendBuild,
       input: sourceOutput,
       outputs: [frontendOutput],
+    });
+
+    const synthAction = new codepipeline_actions.CodeBuildAction({
+      actionName: 'CDK_Synth',
+      project: synthProject,
+      input: sourceOutput,
+      outputs: [synthOutput],
     });
 
     const s3DeployAction = new codepipeline_actions.S3DeployAction({
@@ -139,12 +139,12 @@ export class Pipeline extends cdk.Stack {
           actions: [sourceAction],
         },
         {
-          stageName: 'Synth',
-          actions: [synthAction],
+          stageName: 'BuildFrontend',
+          actions: [frontendBuildAction],
         },
         {
-          stageName: 'Build',
-          actions: [frontendBuildAction],
+          stageName: 'Synth',
+          actions: [synthAction],
         },
         {
           stageName: 'Deploy',
