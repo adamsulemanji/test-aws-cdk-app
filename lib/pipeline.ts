@@ -53,8 +53,7 @@ export class Pipeline extends cdk.Stack {
               'cd my-react-app',
               'npm run build',
               'cd ../../',
-              'cdk synth -o dist',
-              'npx cdk-assets --path dist publish',
+              'cdk synth -o dist TestAwsCdkAppStack',
             ],
           },
         },
@@ -118,13 +117,5 @@ export class Pipeline extends cdk.Stack {
         },
       ],
     });
-
-    // ********** PIPELINE PERMISSIONS **********
-    synthProject.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['s3:*', 'cloudformation:*', 'sts:AssumeRole', 'iam:PassRole'],
-        resources: ['*'],
-      }),
-    );
   }
 }
