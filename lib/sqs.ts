@@ -30,5 +30,9 @@ export class SQSConstruct extends Construct {
     new sqs.Queue(this, 'TestAwsCdkAppQueue4', {
       visibilityTimeout: cdk.Duration.seconds(300),
     });
+
+    new sqs.Queue(this, 'TestAwsCdkAppDeadLetterQueue4', {
+      visibilityTimeout: cdk.Duration.seconds(300),
+    });
   }
 }
