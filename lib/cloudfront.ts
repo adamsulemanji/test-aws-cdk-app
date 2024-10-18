@@ -10,6 +10,9 @@ import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 export class FrontendConstruct extends Construct {
   constructor(app: Construct, id: string) {
@@ -36,6 +39,17 @@ export class FrontendConstruct extends Construct {
       }),
     );
 
+    // ********** Route 53 **********
+    const zone = route53.HostedZone.fromLookup(this, 'HostedZone', {
+      domainName: 'adamsulemanji.com',
+    });
+
+    // ********** ACM Certificate **********
+    const certificate = new acm.Certificate(this, 'Certificate', {
+      domainName: 'test.adamsulemanji.com',
+      validation: acm.CertificateValidation.fromDns(zone),
+    });
+
     // ********** CloudFront Distribution **********
     const s3Origin = new S3Origin(myBucket);
 
@@ -46,6 +60,8 @@ export class FrontendConstruct extends Construct {
         allowedMethods: AllowedMethods.ALLOW_ALL,
       },
       defaultRootObject: 'index.html',
+      domainNames: ['test.adamsulemanji.com'], // Specify the subdomain
+      certificate, // Attach the ACM certificate
       errorResponses: [
         {
           httpStatus: 403,
@@ -60,6 +76,15 @@ export class FrontendConstruct extends Construct {
           ttl: Duration.minutes(1),
         },
       ],
+    });
+
+    // ********** Route 53 Alias Record **********
+    new route53.ARecord(this, 'AliasRecord', {
+      zone,
+      recordName: 'test', // This will create the subdomain `test.adamsulemanji.com`
+      target: route53.RecordTarget.fromAlias(
+        new route53targets.CloudFrontTarget(distribution),
+      ),
     });
 
     // ********** Bucket Deployment **********
