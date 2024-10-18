@@ -81,7 +81,7 @@ export class FrontendConstruct extends Construct {
     // ********** Route 53 Alias Record **********
     new route53.ARecord(this, 'AliasRecord', {
       zone,
-      recordName: 'test', // This will create the subdomain `test.adamsulemanji.com`
+      recordName: 'test',
       target: route53.RecordTarget.fromAlias(
         new route53targets.CloudFrontTarget(distribution),
       ),
