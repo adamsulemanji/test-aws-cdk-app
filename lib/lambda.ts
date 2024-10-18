@@ -1,9 +1,9 @@
+import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import { Construct } from 'constructs';
 
 export class LambdaConstruct extends Construct {
   public readonly orders: lambda.Function;

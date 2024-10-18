@@ -1,5 +1,5 @@
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 export class DynamoDBConstruct extends Construct {
   public readonly ordersTable: dynamodb.Table;
