@@ -82,7 +82,7 @@ function Test() {
         return;
       }
       setMessage('Confirmation successful! You can now sign in.');
-      setIsVerificationRequired(false); // Hide verification code input
+      setIsVerificationRequired(false);
     });
   };
 
