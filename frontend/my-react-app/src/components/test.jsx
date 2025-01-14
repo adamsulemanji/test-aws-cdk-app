@@ -127,7 +127,8 @@ function Test() {
         <img src={logo} className="h-20 mb-4" alt="logo" />
         <p className="text-lg">
           Edit <code className="bg-gray-800 p-1 rounded">src/App.js</code> and
-          save to reload. Hi Adam Sulemanji!!!
+          save to reload. Hi Adam Sulemanji!!! I am testing to see if the new
+          pipeline works.
         </p>
       </header>
 

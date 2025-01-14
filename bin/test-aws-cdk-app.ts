@@ -11,5 +11,3 @@ new TestAwsCdkAppStack(app, 'TestAwsCdkAppStack', {
     region: process.env.CDK_DEFAULT_REGION,
   },
 });
-
-new Pipeline(app, 'Pipeline', {});
