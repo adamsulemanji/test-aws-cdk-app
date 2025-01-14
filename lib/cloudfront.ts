@@ -88,9 +88,5 @@ export class FrontendConstruct extends Construct {
         new route53targets.CloudFrontTarget(this.distribution),
       ),
     });
-
-    // *****************************************************
-    // NO BucketDeployment here — pipeline will handle this!
-    // *****************************************************
   }
 }
